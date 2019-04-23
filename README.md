@@ -45,3 +45,4 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 - cromwell.conf 產生 cloudformation 時自動產出，也等同於網路上的部分資料中的 aws.conf 檔
 - cormwell-36.1 產生 cloudfotmaion 時自動從 cronwell github 下載，如果要用新版的可以用 wget 再去取得新版
 - 最後的 wdl , json 可從示範用的資料取得
+
