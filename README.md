@@ -2,6 +2,16 @@
 ![](https://docs.opendata.aws/genomics-workflows/orchestration/cromwell/images/cromwell-on-aws_infrastructure.png)
 
 https://docs.opendata.aws/genomics-workflows/orchestration/cromwell/cromwell-overview/
+https://cromwell.readthedocs.io/en/stable/
+http://www.internationalgenome.org/wiki/Analysis/vcf4.0/
+https://github.com/broadinstitute/cromwell
+https://github.com/aws-samples/aws-genomics-workflows
+https://github.com/broadinstitute/cromwell/blob/develop/centaur/src/main/resources/integrationTestCases/germline/haplotype-caller-workflow/HaplotypeCallerWF.aws.inputs.json
+https://github.com/broadinstitute/gatk
+https://github.com/broadinstitute/cromwell/tree/develop/centaur/src/main/resources/integrationTestCases/germline/haplotype-caller-workflow
+https://hub.docker.com/r/broadinstitute/gatk/tags
+https://docs.aws.amazon.com/zh_tw/AmazonECS/latest/developerguide/ecs-ami-versions.html
+https://github.com/openwdl/wdl
 
 ## 使用到的 AWS 服務
 |item | description |
@@ -46,3 +56,18 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 - cormwell-36.1 產生 cloudfotmaion 時自動從 cronwell github 下載，如果要用新版的可以用 wget 再去取得新版
 - 最後的 wdl , json 可從示範用的資料取得
 
+## 算算看
+實際上輸入的 wdl 後，會由 cromwell server 處理工作流程分配到後端真正運算的叢集，而本例中會透過 AWS EC2 Spot instances 來處理這類的大規模運算，運算完成後，會直接存到 S3 的 cromwell-execution
+
+使用 real-world 案例中的參考，配置 json 跑實際運算後，會根據目前 region 的狀況來呼叫一堆 spot 來做運算，整個過程大概是 1 小時左右
+
+
+## cromwell swagger ui
+透過 SSH Tunnel Forwarding 可以用你桌面電腦的 localhost:8000 直接進 UI 查看圖形介面
+也可以從這邊直接選擇檔案部署運算 wdl , json 檔
+
+## 算完的結果為 vcf 檔
+那是醫學研究所的範圍了，大概可以用文字編輯器看一下是啥資料 TGCA 好像基因編碼
+
+![](/img/snap_039.png)
+![](img/snap_040.png)
