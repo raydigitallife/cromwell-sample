@@ -1,0 +1,3 @@
+{
+  "ReadFile.read_file.file": "s3://ray-cromwell-2019-04-22/meats.txt"
+}

@@ -2,8 +2,46 @@
 ![](https://docs.opendata.aws/genomics-workflows/orchestration/cromwell/images/cromwell-on-aws_infrastructure.png)
 
 https://docs.opendata.aws/genomics-workflows/orchestration/cromwell/cromwell-overview/
-1. 登入 AWS　後直接使用 `https://github.com/aws-samples/aws-genomics-workflows/blob/master/src/templates/cromwell/cromwell-aio.template.yaml` 做整個環境的部署
+
+## 使用到的 AWS 服務
+|item | description |
+|:---|:---|
+|AWS Cloudformation | 建立所有雲端基礎設施資源的模型並進行佈建 |
+|AWS Batch | 任何規模的全受管批次處理 |
+|AWS ECS | 在生產環境中執行容器化的應用程式 |
+|AWS S3 | 專為從任何位置存放和擷取任何數量資料所建立的物件儲存 |
+|AWS IAM | 安全地管理對 AWS 服務和資源的存取 |
+
+## 動手做1-環境準備
+
+- region 選在 us-west-2
+- 不要拿正式環境來玩
+
+1. 登入 AWS 高權限帳號後直接使用 `https://github.com/aws-samples/aws-genomics-workflows/blob/master/src/templates/cromwell/cromwell-aio.template.yaml` 做整個環境的部署
 2. 部署大概要半個小時左右
 3. 部署會用到 1 個新建的 VPC，如果原本帳號有多個 VPC 須注意
 4. 建立一個合法的 S3 bucket 命名空間，這會放置 cromwell 的運算資料及結果
-6. EC2 預先建立 key pair , 使用 cromwell terminal 會用到
+5. EC2 預先建立 key pair , 使用 cromwell terminal 會用到
+
+## 動手做2-登入 cromwell server 拷貝公開基因資料集
+1. ssh 登入透過 cloudformaion 做出來的主機，可以在 ec2 console 找到機器 IP
+2. 複製基因體公開資料到你自己的 s3 bucket (大概10 GB)
+
+```bash 
+$ aws s3 cp s3://gatk-test-data/wgs_bam/NA12878_24RG_hg38/NA12878_24RG_small.hg38.bam s3://your-bucket-name/
+$ aws s3 cp s3://gatk-test-data/wgs_bam/NA12878_24RG_hg38/NA12878_24RG_small.hg38.bai s3://your-bucket-name/
+$ aws s3 cp s3://broad-references/hg38/v0/Homo_sapiens_assembly38.dict s3://your-bucket-name/
+$ aws s3 cp s3://broad-references/hg38/v0/Homo_sapiens_assembly38.fasta s3://your-bucket-name/
+$ aws s3 cp s3://broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai s3://your-bucket-name/
+$ aws s3 cp s3://gatk-test-data/intervals/hg38_wgs_scattered_calling_intervals.txt s3://your-bucket-name/
+```
+
+## 動手做3-hello-world 測試
+
+基本語法
+```bash
+$ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.json
+```
+- cromwell.conf 產生 cloudformation 時自動產出，也等同於網路上的部分資料中的 aws.conf 檔
+- cormwell-36.1 產生 cloudfotmaion 時自動從 cronwell github 下載，如果要用新版的可以用 wget 再去取得新版
+- 最後的 wdl , json 可從示範用的資料取得
