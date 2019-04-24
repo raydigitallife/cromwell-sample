@@ -16,20 +16,22 @@
 
 ## 估計費用
 
-主要費用會在 S3 的存放檔案及 EC2 的運算資源上，不過這個部署很有良心都用 spot instances 跑運算，所以做一個小測試花不了多少錢
+主要費用會在 S3 的存放檔案及 EC2 的運算資源上，不過這個部署很有良心都用 Spot Instances 跑運算，所以做一個小測試花不了多少錢
 
 ## 動手做1 環境準備
 
 - [x] 不要拿正式環境來玩
-- [x] region 選在 us-west-2 奧勒岡
+- [x] region 選 us-west-2 奧勒岡
 
-1. 登入 AWS 高權限帳號後直接使用 AWS Cloudformation 做整個環境的部署 `https://github.com/aws-samples/aws-genomics-workflows/blob/master/src/templates/cromwell/cromwell-aio.template.yaml`
+1. 登入 AWS 高權限帳號後直接使用 AWS Cloudformation 做整個環境的部署 `https://s3.amazonaws.com/aws-genomics-workflows/templates/cromwell/cromwell-aio.template.yaml`
 2. 部署大概要半個小時左右
 3. 部署會用到 1 個新建的 VPC，如果原本帳號有多個 VPC 須注意
 4. 建立一個合法的 S3 bucket 命名空間，這會放置 cromwell 的運算資料及結果
 5. EC2 預先建立 ssh key pair ，使用 cromwell server 的 terminal 會用到
 
 ## 動手做2 登入 cromwell server 與 AWS S3 CP 拷貝公開基因資料集
+
+![ssh client](img/snap_043.png)
 
 1. ssh 登入透過 AWS Cloudformaion 做出來的主機，可以在 EC2 console 找到機器 IP
 2. 複製基因體公開資料到**你自己的 s3 bucket (總共 10 GB 左右)**
@@ -57,19 +59,29 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 - cormwell-36.1 產生 Cloudfotmaion 時自動從 cronwell github 下載，如果要用新版的可以用 wget 再去取得新版
 - 最後的 wdl , json 可從 hello-world 資料夾取得檔案
 
-實際上輸入的 wdl 後，會由 cromwell server 處理工作流程分配到後端真正運算的叢集，而本例中會透過 AWS EC2 Spot instances 來處理這類的大規模運算，運算完成後，會直接存到 S3 的 cromwell-execution
+實際上輸入的 wdl 後，會由 cromwell server 處理工作流程分配到後端真正運算的叢集，而本例中會透過 AWS EC2 Spot Instances 來處理這類的大規模運算，運算完成後，會直接存到 S3 的 cromwell-execution
 
 使用 real-world 案例中的參考，配置 json 跑實際運算後，會根據目前 region 的狀況來呼叫一堆 spot 來做運算，整個過程大概是 1 小時左右
 
 
-## 動手做4 Cromwell Swagger UI
+## 動手做4 從 AWS S3 讀取 meats.txt 做運算的測試
 
-透過 SSH Tunnel Forwarding 可以用你桌面電腦的 localhost:8000 直接進 UI 查看圖形介面
-也可以從這邊直接選擇檔案部署運算 wdl , json 檔
+這邊示範從 AWS S3 讀取一個 txt 檔做運算的方式
 
-## 算完的結果
+1. 先把 meats.txt 放在你建好的 S3 bucket 之中
+2. 修改 s3inputs.json 成你自己的 S3 bucket 路徑
+3. 用上面 hello-world 的語法跑測試
 
-是一種 vcf 檔，但那是醫學研究所的範圍了，可以用文字編輯器看一下是啥資料，TGCA 好像基因編碼...
+## 動手做5 Cromwell Swagger UI
+
+- 透過 SSH Tunnel Forwarding 可以用你桌面電腦的 localhost:8000 直接進 UI 查看圖形介面，也可以從這邊直接選擇檔案部署運算 wdl , json 檔
+- 上面那是正規的做法，比較安全，但事實上 AWS Cloudformation 在建立時就問你要不要開 80 port 允許 0.0.0.0/0 的IP了，所以直接用 IP 連線 http://IP:8000 也可以
+
+## 動手做6 real-world case
+
+按照上面的語法將檔案輸入進去，改一下 JSON 內的 S3 路徑參數，如果有興趣的話還可以改一下 GATK 內的 Docker Image 看跑出來的結果是什麼
+這邊的運算會真的叫一堆 Spot Instances 來算資料，可用的運算資源可以在 AWS Batch 裡面設定，跑起來會很 High
+最後會在 S3 看到 cromwell-execution 看到資料集，下載回來本機電腦解壓縮後查看 vcf 檔，但那是醫學研究所的範圍了，可以用文字編輯器看一下是啥資料，目前只知道 TGCA 是基因編碼...
 
 ![](/img/snap_039.png)
 ![](/img/snap_040.png)
@@ -78,7 +90,7 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 
 玩完之後記得刪除資源，避免 AWS 費用一直產出
 
-- [ ] 刪除 Cloudformation Deployment Stack
+- [ ] Cloudformation
 - [ ] AWS Batch 其實只是後端包一層 AWS ECS 的皮，實際都是跑在 ECS 內的 EC2 Container 之中，也可以清除該服務內的資料
 - [ ] AWS Cloudwatch 會記錄 LOG
 - [ ] AWS S3 放置資料用的，用不到就刪掉
