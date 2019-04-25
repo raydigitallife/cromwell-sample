@@ -34,8 +34,8 @@
 ![ssh client](img/snap_043.png)
 
 1. ssh 登入透過 AWS Cloudformaion 做出來的主機，可以在 EC2 console 找到機器 IP
-2. 複製基因體公開資料到**你自己的 s3 bucket (總共 10 GB 左右)**
-3. **複製的時候等它跑完在跑下一段指令，否則可能會拷貝到不完整的資料**
+2. 複製基因體公開資料到你自己的 s3 bucket (總共 10 GB 左右)
+3. 複製的時候等它跑完在跑下一段指令，否則可能會拷貝到不完整的資料
 4. 跑完後可以在 S3 console 看到結果
 
 ```bash
@@ -61,9 +61,6 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 
 實際上輸入的 wdl 後，會由 cromwell server 處理工作流程分配到後端真正運算的叢集，而本例中會透過 AWS EC2 Spot Instances 來處理這類的大規模運算，運算完成後，會直接存到 S3 的 cromwell-execution
 
-使用 real-world 案例中的參考，配置 json 跑實際運算後，會根據目前 region 的狀況來呼叫一堆 spot 來做運算，整個過程大概是 1 小時左右
-
-
 ## 動手做4 從 AWS S3 讀取 meats.txt 做運算的測試
 
 這邊示範從 AWS S3 讀取一個 txt 檔做運算的方式
@@ -81,12 +78,18 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 
 ## 動手做6 real-world case
 
-按照上面的語法將檔案輸入進去，改一下 JSON 內的 S3 路徑參數，如果有興趣的話還可以改一下 GATK 內的 Docker Image 看跑出來的結果是什麼
-這邊的運算會真的叫一堆 Spot Instances 來算資料，可用的運算資源可以在 AWS Batch 裡面設定，跑起來會很 High
+使用 real-world 案例中的參考，配置 json 跑實際運算後，會根據目前 region 的狀況來呼叫一堆 spot 來做運算，整個過程大概是 1 小時左右   
+按照上面的語法將檔案輸入進去，改一下 json 內的 `S3 路徑參數`，如果有興趣的話還可以改一下 `GATK 內的 Docker Image` 看跑出來的結果是什麼   
+這邊的運算會真的叫一堆 Spot Instances 來算資料，可用的運算資源可以在 AWS Batch 裡面設定，跑起來會很 High   
 最後會在 S3 看到 cromwell-execution 看到資料集，下載回來本機電腦解壓縮後查看 vcf 檔，但那是醫學研究所的範圍了，可以用文字編輯器看一下是啥資料，目前只知道 TGCA 是基因編碼...
 
-![](/img/snap_039.png)
-![](/img/snap_040.png)
+![VCF 1](/img/snap_039.png)
+![VCF 2](/img/snap_040.png)
+
+## 採坑紀錄
+
+- 使用最新版的 cromwell.jar 跑不一定會成功，因此可能需要用原始教學檔案提供的 cromwell-36.1.jar 這個版本，EC2 沒有就自己去下載吧!
+- 如果起 AWS Cloudformation 選的機器規格，使用 t2.mirco 跑 Java 似乎會遇到記憶體不足的問題，還需要調查
 
 ## 測試環境的清除
 
@@ -95,18 +98,18 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 - [ ] Cloudformation
 - [ ] AWS Batch 其實只是後端包一層 AWS ECS 的皮，實際都是跑在 ECS 內的 EC2 Container 之中，也可以清除該服務內的資料
 - [ ] AWS Cloudwatch 會記錄 LOG
-- [ ] AWS S3 放置資料用的，用不到就刪掉
+- [ ] AWS S3 放置運算資料用的，用不到就刪掉
 
 ## 參考連結
 
-<https://docs.opendata.aws/genomics-workflows/orchestration/cromwell/cromwell-overview/>
-<https://cromwell.readthedocs.io/en/stable/>
-<http://www.internationalgenome.org/wiki/Analysis/vcf4.0/>
-<https://github.com/broadinstitute/cromwell>
-<https://github.com/aws-samples/aws-genomics-workflows>
-<https://github.com/broadinstitute/cromwell/blob/develop/centaur/src/main/resources/integrationTestCases/germline/haplotype-caller-workflow/HaplotypeCallerWF.aws.inputs.json>
-<https://github.com/broadinstitute/gatk>
-<https://github.com/broadinstitute/cromwell/tree/develop/centaur/src/main/resources/integrationTestCases/germline/haplotype-caller-workflow>
-<https://hub.docker.com/r/broadinstitute/gatk/tags>
-<https://docs.aws.amazon.com/zh_tw/AmazonECS/latest/developerguide/ecs-ami-versions.html>
-<https://github.com/openwdl/wdl>
+- <https://docs.opendata.aws/genomics-workflows/orchestration/cromwell/cromwell-overview/>
+- <https://cromwell.readthedocs.io/en/stable/>
+- <http://www.internationalgenome.org/wiki/Analysis/vcf4.0/>
+- <https://github.com/broadinstitute/cromwell>
+- <https://github.com/aws-samples/aws-genomics-workflows>
+- <https://github.com/broadinstitute/cromwell/blob/develop/centaur/src/main/resources/integrationTestCases/germline/haplotype-caller-workflow/HaplotypeCallerWF.aws.inputs.json>
+- <https://github.com/broadinstitute/gatk>
+- <https://github.com/broadinstitute/cromwell/tree/develop/centaur/src/main/resources/integrationTestCases/germline/haplotype-caller-workflow>
+- <https://hub.docker.com/r/broadinstitute/gatk/tags>
+- <https://docs.aws.amazon.com/zh_tw/AmazonECS/latest/developerguide/ecs-ami-versions.html>
+- <https://github.com/openwdl/wdl>
