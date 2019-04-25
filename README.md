@@ -72,10 +72,12 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 2. 修改 s3inputs.json 成你自己的 S3 bucket 路徑
 3. 用上面 hello-world 的語法跑測試
 
-## 動手做5 Cromwell Swagger UI
+## 動手做5 Cromwell Swagger API UI
 
 - 透過 SSH Tunnel Forwarding 可以用你桌面電腦的 localhost:8000 直接進 UI 查看圖形介面，也可以從這邊直接選擇檔案部署運算 wdl , json 檔
 - 上面那是正規的做法，比較安全，但事實上 AWS Cloudformation 在建立時就問你要不要開 80 port 允許 0.0.0.0/0 的IP了，所以直接用 IP 連線 http://IP:8000 也可以
+
+![Cromwell Swagger API UI](img/snap_045.png)
 
 ## 動手做6 real-world case
 
