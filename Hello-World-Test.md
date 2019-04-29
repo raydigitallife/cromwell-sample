@@ -1,6 +1,10 @@
 # Hello-World-Test
 
 ```bash
+
+# 執行 Hello,World 指令，不要用最新版的 cromwell.jar 可能會有錯誤!!
+# java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run cromwell-sample/hello-world/hello.wdl -i cromwell-sample/hello-world/hello.inputs.json
+
 [ec2-user@ip-10-0-141-58 ~]$ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run cromwell-sample/hello-world/hello.wdl -i cromwell-sample/hello-world/hello.inputs.json
 [2019-04-29 02:35:03,75] [info] Running with database db.url = jdbc:hsqldb:mem:d7b588c8-99d9-4876-8013-5527d7f9c4b8;shutdown=false;hsqldb.tx=mvcc
 [2019-04-29 02:35:11,64] [info] Running migration RenameWorkflowOptionsInMetadata with a read batch size of 100000 and a write batch size of 100000
@@ -36,6 +40,8 @@
 [2019-04-29 02:35:16,25] [info] MaterializeWorkflowDescriptorActor [7dad02fa]: Call-to-Backend assignments: wf_hello.hello -> AWSBATCH
 [2019-04-29 02:35:17,96] [info] WorkflowExecutionActor-7dad02fa-645c-402e-ba36-5a39ba21d769 [7dad02fa]: Starting wf_hello.hello
 [2019-04-29 02:35:18,97] [info] Assigned new job execution tokens to the following groups: 7dad02fa: 1
+
+
 [2019-04-29 02:35:20,00] [info] AwsBatchAsyncBackendJobExecutionActor [7dad02fawf_hello.hello:NA:1]: echo "Hello World! Welcome to Cromwell . . . on AWS!"
 [2019-04-29 02:35:20,29] [info] Submitting job to AWS Batch
 [2019-04-29 02:35:20,30] [info] dockerImage: ubuntu:latest
