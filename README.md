@@ -27,8 +27,7 @@
 
 1. 登入 AWS 高權限帳號後直接使用 AWS Cloudformation 做整個環境的部署 `https://s3.amazonaws.com/aws-genomics-workflows/templates/cromwell/cromwell-aio.template.yaml`
 2. EC2 預先建立 ssh key pair ，使用 cromwell server 的 terminal 會用到
-3. 建立一個合法的 S3 bucket 命名空間，這會放置 cromwell 的運算資料及結果
-   -. 可以預先建或是 AWS Cloudformation 部署的時候直接指定
+3. 建立一個合法的 S3 bucket 命名空間，這會放置 cromwell 的運算資料及結果(可以預先建或是 AWS Cloudformation 部署的時候直接指定)
 4. 部署過程要 10~30 min 左右，可以泡杯咖啡等一下
 5. 部署用到 1 個新建的 VPC，如果原本帳號有多個 VPC 須注意
 
@@ -99,9 +98,9 @@ $ java -Dconfig.file=cromwell.conf -jar cromwell-36.1.jar run YOUR.wdl -i YOUR.j
 
 - 最新版的 cromwell.jar 跑不一定會成功，因此可能需要用原始教學檔案提供的 cromwell-36.1.jar 這個版本，如果沒有就自己去下載
 - 部署 AWS Cloudformation 選 Cromwell Terminial Server 機器規格時，使用 t2.mirco 跑 Java 似乎會遇到記憶體不足的問題，還需要調查
-  - 起出來的 Cromwell Terminial Server 如果規格太小，直接關機改即可，不用重建
-  - Cromwell Terminial Server 如果不用可以先關機，省費用
-  - 常用的話就要考慮 Firewall 的問題了，畢竟測試是全開 IP 的
+    - 起出來的 Cromwell Terminial Server 如果規格太小，直接關機改即可，不用重建
+    - Cromwell Terminial Server 如果不用可以先關機，省費用
+    - 常用的話就要考慮 Firewall 的問題了，畢竟測試是全開 IP 的
 
 ## 測試環境的清除
 
